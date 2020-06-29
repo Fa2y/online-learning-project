@@ -15,9 +15,11 @@ def wrapperuser(instance, filename):
 class User(AbstractUser):
 	is_student = models.BooleanField(default=False)
 	is_teacher = models.BooleanField(default=False)
-	establishment = models.CharField(max_length=50)
+	establishment = models.CharField(max_length=50, help_text='The establishment you teach/study in.')
 	bio = models.CharField(max_length=400)
 	profile_pic = models.ImageField(upload_to=wrapperuser, default="default.jpg")
+	email_confirmed = models.BooleanField(default=False)
+
 
 	def __str__(self):
 		return self.username
