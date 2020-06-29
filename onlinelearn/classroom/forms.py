@@ -42,7 +42,7 @@ class StudentSignUpForm(UserCreationForm):
 			'establishment',
 			'interests',
 		]
-	def save(self):
+	def save(self, commit):
 		user = super().save(commit=False)
 		user.is_student = True
 		user.save()

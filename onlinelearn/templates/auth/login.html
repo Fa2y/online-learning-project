@@ -1,0 +1,23 @@
+    {% block main %}
+
+    <form class="form-horizontal" name="LoginForm" action="/login/" method="post">
+    {% csrf_token %}
+    {% if next %}
+        <input type="hidden" name="next" value="{{ next }}" />
+    {% endif %}
+    <label class="control-label" for="username">Username</label>
+            <input type="text" id="username" value="{{username}}" name="username" placeholder="Username">
+        <label class="control-label" for="password">Password</label>
+                <input type="password" name="password" id="password" placeholder="Password">
+
+            <button type="submit" class="btn">Login</button>
+    </form>
+    {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+    {% endblock %}
