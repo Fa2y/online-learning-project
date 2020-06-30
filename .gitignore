@@ -130,3 +130,5 @@ dmypy.json
 
 #Django migrations
 **/migrations/*
+#Media file
+onlinelearn/media/*

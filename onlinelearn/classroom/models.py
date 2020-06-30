@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+import os
+from PIL import Image
+
 
 def wrapperuser(instance, filename):
     ext = filename.split('.')[-1]
@@ -10,16 +13,23 @@ def wrapperuser(instance, filename):
         # set filename as random string
         filename = '{}.{}'.format(uuid4().hex, ext)
     # return the whole path to the file
-    return os.path.join('images/', filename)
+    return os.path.join('profile/', filename)
 
 class User(AbstractUser):
 	is_student = models.BooleanField(default=False)
 	is_teacher = models.BooleanField(default=False)
 	establishment = models.CharField(max_length=50, help_text='The establishment you teach/study in.')
 	bio = models.CharField(max_length=400)
-	profile_pic = models.ImageField(upload_to=wrapperuser, default="default.jpg")
+	profile_pic = models.ImageField(upload_to=wrapperuser, default="profile/default.jpg")
 	email_confirmed = models.BooleanField(default=False)
 
+	def save(self):
+		super().save()
+		img = Image.open(self.profile_pic.path)
+		if img.height > 300 or img.width > 300:
+			img.thumbnail((300,300))
+			print("image edited")
+			img.save(self.profile_pic.path)
 
 	def __str__(self):
 		return self.username
@@ -43,7 +53,7 @@ class Quizz(models.Model):
 class Student(models.Model):
 	user= models.OneToOneField(User, on_delete=models.CASCADE)
 	interests = models.ManyToManyField(Subject)
-	quizzez = models.ManyToManyField(Quizz)
+	quizzez = models.ManyToManyField(Quizz, blank=True)
 
 	def __str__(self):
 		return self.user.username

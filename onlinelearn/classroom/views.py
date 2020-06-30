@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib import messages
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -6,12 +6,13 @@ from django.http import Http404
 from django.utils.encoding import force_bytes, force_text
 from django.template.loader import render_to_string
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
 from .tokens import account_activation_token
 from .forms import *
 from .models import User
 
 
-def StudentSignupView(request, usertype):
+def SignupView(request, usertype):
 	if usertype != 'student' and usertype != 'teacher':
 		raise Http404("Unvalid type of user. Only teacher/student are valid.")
 	if request.method == 'POST':
@@ -40,7 +41,7 @@ def StudentSignupView(request, usertype):
 		else:
 			form = TeacherSignUpForm()
 
-	return render(request, 'auth/student-signup.html', {"form":form})
+	return render(request, 'auth/signup.html', {"form":form})
 
 def ActivateView(request, uidb64, token):
 	try:
@@ -76,3 +77,28 @@ def LoginView(request):
 		else:
 			messages.error(request, 'Invalid Credentials.')
 	return render(request, 'auth/login.html',{'username': username})
+
+def ProfileView(request, username):
+	user = get_object_or_404(User, username=username)
+	if user.is_active:
+		return render(request, 'profile.html', {'user': user})
+	raise Http404('User is not active')
+
+@login_required
+def PrivateProfileView(request):
+	if request.method == 'POST':
+		if request.user.is_teacher:
+			form = TeacherProfileUpdateForm(request.POST, request.FILES, instance = request.user)
+		else:
+			form = StudentProfileUpdateForm(request.POST, request.FILES, instance = request.user)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Your profile updated successfully.')
+			return redirect('private-profile')
+	else:
+		if request.user.is_teacher:
+			form = TeacherProfileUpdateForm(instance = request.user)
+		else:
+			form = StudentProfileUpdateForm(instance = request.user)
+
+		return render(request, 'private-profile.html', {"form":form})
