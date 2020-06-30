@@ -5,8 +5,9 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.http import Http404
 from django.utils.encoding import force_bytes, force_text
 from django.template.loader import render_to_string
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 from .tokens import account_activation_token
 from .forms import *
 from .models import User
@@ -102,3 +103,20 @@ def PrivateProfileView(request):
 			form = StudentProfileUpdateForm(instance = request.user)
 
 		return render(request, 'private-profile.html', {"form":form})
+
+@login_required
+def ChangePasswordView(request):
+	if request.method == 'POST':
+		form = PasswordChangeForm(request.user, request.POST)
+		if form.is_valid():
+			user = form.save()
+			update_session_auth_hash(request, user)  # Important!
+			messages.success(request, 'Your password was successfully updated!')
+			return redirect('change_password')
+		else:
+			messages.error(request, 'Please correct the error below.')
+	else:
+		form = PasswordChangeForm(request.user)
+	return render(request, 'auth/change_password.html', {
+		'form': form
+	})

@@ -11,6 +11,7 @@ urlpatterns = [
 	url(r'^login/', views.LoginView, name='login'),
 	url(r'^profile/(?P<username>[a-zA-Z0-9]+)$', views.ProfileView, name='profile'),
 	url(r'^account/profile', views.PrivateProfileView, name='private-profile'),
+	url(r'^account/changepassword/$', views.ChangePasswordView, name='change-password'),
 
 #.....setting up static route like this just for debugging 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
