@@ -75,14 +75,14 @@ class Answer(models.Model):
 
 class TakenQuizz(models.Model):
 	quizz = models.ForeignKey(Quizz, on_delete=models.SET_NULL, null=True)
-	student = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True)
+	user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 	score = models.FloatField()
 	date = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
-		return self.quizz.title+' resuls for '+self.student.__str__
+		return self.quizz.title+' resuls for '+self.user.__str__()
 
-#It needs further development, we leave like that for now
+#It needs further development, we leave like this for now
 class Course(models.Model):
 	title = models.CharField(max_length=60)
 	content = models.CharField(max_length=500)

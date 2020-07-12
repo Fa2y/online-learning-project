@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+
+{%  block content %}
     <div class="content-section">
       <div class="media">
         <img class="rounded-circle account-img" src="{{ user.profile_pic.url }}">
@@ -6,5 +9,6 @@
           <p class="text-secondary">{{ user.email }}</p>
         </div>
       </div>
-      <!-- FORM HERE -->
     </div>
+
+{% endblock %}

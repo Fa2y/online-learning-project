@@ -2,18 +2,34 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib import messages
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.utils.encoding import force_bytes, force_text
 from django.template.loader import render_to_string
-from django.contrib.auth import login, authenticate, update_session_auth_hash
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, authenticate, update_session_auth_hash, logout
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import PasswordChangeForm
 from .tokens import account_activation_token
 from .forms import *
-from .models import User
+from .models import User, Subject
+import json
 
+def is_teacher(user):
+	'''for the user passes test decorator'''
+	return user.is_teacher
+
+def is_takenquizz_owner(view_func):
+	def decorator(request, *args, **kwargs):
+		pk = kwargs["pk"]
+		taken_quizz = get_object_or_404(TakenQuizz, pk=pk)
+		if not (taken_quizz.user.id == request.user.id):
+			return HttpResponse("You can't see this quizz results", status = 403)
+		return view_func(request, *args, **kwargs)
+	return decorator
 
 def SignupView(request, usertype):
+	if request.user.is_authenticated:
+		return redirect('private-profile')
 	if usertype != 'student' and usertype != 'teacher':
 		raise Http404("Unvalid type of user. Only teacher/student are valid.")
 	if request.method == 'POST':
@@ -63,10 +79,12 @@ def ActivateView(request, uidb64, token):
 
 def LoginView(request):
 	username = password = ''
+	if request.user.is_authenticated:
+		return redirect('private-profile')
 	if request.POST:
 		username = request.POST.get('username')
 		password = request.POST.get('password')
-		checkuser = User.objects.filter(username=username).first()
+		checkuser = User.objects.get(username=username)
 		if checkuser is not None:
 			if not checkuser.email_confirmed:
 				messages.error(request, 'Confirm your email to login')
@@ -78,6 +96,12 @@ def LoginView(request):
 		else:
 			messages.error(request, 'Invalid Credentials.')
 	return render(request, 'auth/login.html',{'username': username})
+
+@login_required
+def LogoutView(request):
+	logout(request)
+	messages.success('You are logged out.')
+	return redirect('home')
 
 def ProfileView(request, username):
 	user = get_object_or_404(User, username=username)
@@ -120,3 +144,54 @@ def ChangePasswordView(request):
 	return render(request, 'auth/change_password.html', {
 		'form': form
 	})
+
+@login_required
+@user_passes_test(is_teacher, )
+def CreateQuizzView(request):
+	if request.POST:
+		print(request.POST)
+		data = request.POST
+		quizzname = data['quizzname']
+		subject = data['subject']
+		questions
+	else:
+		subjects = Subject.objects.all()
+		return render(request, 'create-quizz.html',{'subjects':subjects})
+
+@csrf_exempt
+@login_required
+def PassQuizzView(request, pk):
+	quizz = get_object_or_404(Quizz,pk = pk)
+	questions = Question.objects.filter(quizz = quizz)
+	print(request.POST)
+	if request.POST:
+		i = 0
+		total_score = 0
+		user_score = 0
+		for question in questions:
+			answers = Answer.objects.filter(question = question, is_correct = True).values_list('text', flat = True)
+			total_score += len(answers)
+			user_answers = request.POST[f'answer{i}[]']
+			print(user_answers, type(user_answers))
+			# for answr in user_answers:
+				# print("answr:",answr)
+			if user_answers in list(answers):
+				user_score +=1
+			i += 1
+		taken_quizz = TakenQuizz.objects.create(quizz = quizz, user = request.user, score = (user_score*100)/total_score )
+
+		return redirect(f'/quizz/taken/{taken_quizz.pk}')
+	else:
+		data = {'quizzname': quizz.title,'subject':quizz.subject.name,'author':quizz.author.username,'questions':[]}
+		for question in questions:
+			question_text = question.text
+			answers = Answer.objects.filter(question = question).values_list('text', flat = True)
+			data['questions'].append({'question':question_text, "options" : list(answers)})
+
+		return render(request, 'pass-quizz.html', { 'data' : json.dumps(data) })
+
+@login_required
+@is_takenquizz_owner
+def TakenQuizzView(request, pk):
+	taken_quizz = get_object_or_404(TakenQuizz, pk = pk)
+	return render(request, 'result-quizz.html', {'taken_quizz' : taken_quizz})

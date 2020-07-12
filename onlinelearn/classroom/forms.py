@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import (User, Student, Subject)
+from .models import *
 
 class TeacherSignUpForm(UserCreationForm):
 	class Meta(UserCreationForm.Meta):
@@ -57,7 +57,7 @@ class StudentProfileUpdateForm(forms.ModelForm):
 	)
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.fields['interests'].initial = Student.objects.filter(user=self.instance).first().interests.all()
+		self.fields['interests'].initial = Student.objects.get(user=self.instance).first()
 	class Meta:
 		model = User
 		fields = [
@@ -73,7 +73,7 @@ class StudentProfileUpdateForm(forms.ModelForm):
 	def save(self, commit=False):
 		user = super().save(commit=False)
 		user.save()
-		student = Student.objects.filter(user=user).first()
+		student = Student.objects.get(user=user)
 		student.interests.clear()
 		student.interests.add(*self.cleaned_data.get('interests'))
 		return user
@@ -90,3 +90,19 @@ class TeacherProfileUpdateForm(forms.ModelForm):
 			'profile_pic',
 			'bio'
 		]
+'''
+class QuizzCreateForm(forms.ModelForm):
+	questions_text = forms.ModelMultipleChoiceField()
+	anwsers_text = forms.ModelMultipleChoiceField()
+	class Meta:
+		model = Quizz
+		fields = [
+		'title',
+		'subject',
+		'author',
+		'questions_text',
+		'anwsers_text',
+		]
+	def save(self, commit=False):
+		pass
+'''

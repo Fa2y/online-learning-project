@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}"
+{%  block content %}
+<div class="wrapper">
+  <div class="quiz">
+    <div class="quiz_header">
+      <div class="quiz_user">
+        <h4>Quizz: <span class="name"></span></h4>
+         <p class="text-secondary author"></p>
+      </div>
+      <div class="quiz_timer">
+        <span class="time">00:00</span>
+      </div>
+    </div>
+    {% csrf_token %}
+    <div class="progress" style="height: 3px;">
+      <div class="progress-bar" role="progressbar" style="width: 0%;background-color: #341fff" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+    <div class="quiz_body">
+      <div id="questions">
+        
+        <!-- <ul class="option_group">
+          <li class="option">option 1</li>
+          <li class="option">option 2</li>
+          <li class="option">option 3</li>
+          <li class="option">option 4</li>
+        </ul> -->
+      </div>
+      <button class="btn-next" onclick="next()">Next Question</button>
+    </div>
+  </div>
+</div>
+<input type="hidden" id="data" name="data" value="{{ data }}">
+<!-- user info -->
+<!-- <script src="dist/js/userInfo.js"></script> -->
+<!-- timer -->
+<!-- <script src="dist/js/timer.js"></script> -->
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static "js/pass-quizz.js" %}"></script>
+{% endblock %}
+{% endblock %}

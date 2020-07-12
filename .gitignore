@@ -132,3 +132,4 @@ dmypy.json
 **/migrations/*
 #Media file
 onlinelearn/media/*
+questions-dataset.json
