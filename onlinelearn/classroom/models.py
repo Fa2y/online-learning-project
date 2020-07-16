@@ -23,8 +23,8 @@ class User(AbstractUser):
 	profile_pic = models.ImageField(upload_to=wrapperuser, default="profile/default.jpg")
 	email_confirmed = models.BooleanField(default=False)
 
-	def save(self):
-		super().save()
+	def save(self, *args, **kwargs):
+		super().save(*args, **kwargs)
 		img = Image.open(self.profile_pic.path)
 		if img.height > 300 or img.width > 300:
 			img.thumbnail((300,300))

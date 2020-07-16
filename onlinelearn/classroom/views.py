@@ -149,7 +149,6 @@ def ChangePasswordView(request):
 @user_passes_test(is_teacher, )
 def CreateQuizzView(request):
 	if request.POST:
-		print(request.POST)
 		data = request.POST
 		quizzname = data['quizzname']
 		subject = data['subject']
@@ -163,7 +162,6 @@ def CreateQuizzView(request):
 def PassQuizzView(request, pk):
 	quizz = get_object_or_404(Quizz,pk = pk)
 	questions = Question.objects.filter(quizz = quizz)
-	print(request.POST)
 	if request.POST:
 		i = 0
 		total_score = 0
@@ -172,7 +170,6 @@ def PassQuizzView(request, pk):
 			answers = Answer.objects.filter(question = question, is_correct = True).values_list('text', flat = True)
 			total_score += len(answers)
 			user_answers = request.POST[f'answer{i}[]']
-			print(user_answers, type(user_answers))
 			# for answr in user_answers:
 				# print("answr:",answr)
 			if user_answers in list(answers):
@@ -194,4 +191,14 @@ def PassQuizzView(request, pk):
 @is_takenquizz_owner
 def TakenQuizzView(request, pk):
 	taken_quizz = get_object_or_404(TakenQuizz, pk = pk)
-	return render(request, 'result-quizz.html', {'taken_quizz' : taken_quizz})
+	quizz = get_object_or_404(Quizz, pk = taken_quizz.quizz.pk)
+	questions = Question.objects.filter(quizz = quizz)
+	data = {'questions':[]}
+	for question in questions:
+		question_text = question.text
+		answers = Answer.objects.filter(question = question).values_list('text', flat = True)
+		correct_answers = Answer.objects.filter(question = question, is_correct = True).values_list('text', flat = True)
+		data['questions'].append({'question':question_text,"answers":list(correct_answers)})
+
+	return render(request, 'result-quizz.html', {'taken_quizz' : taken_quizz, 'data':data})
+

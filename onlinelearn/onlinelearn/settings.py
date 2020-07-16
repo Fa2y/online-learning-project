@@ -131,9 +131,9 @@ MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL = 'classroom.User'
 
-LOGIN_URL = 'login/'
+LOGIN_URL = '/login/'
 
-LOGOUT_URL = 'logout/'
+LOGOUT_URL = '/logout/'
 
 LOGIN_REDIRECT_URL = 'home'
 

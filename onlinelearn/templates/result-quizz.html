@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+{%  block content %}
+<div class="card text-center">
+	<div class="card-header">
+		<div class="circle"></div>
+		<h1><span class="badge badge-pill" id="score"></span></h1>
+	</div>
+	<div class="card-body">
+		<h5 class="card-title" id="msg"></h5>
+		<h1 class="card-text">{{ taken_quizz.quizz.title }}</h1>
+		<h5><span class="badge badge-info">{{ taken_quizz.quizz.subject.name }}</span></h5>
+		<a href="/quizz/{{taken_quizz.quizz.pk}}" class="btn btn-primary">Take the quiz again</a>
+		<a href="#" id='see_answers' class="btn btn-primary">See answers</a>
+		<br>
+		<table class="table table-bordered table-striped" style="margin-top: 10px" >
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">Question:</th>
+					<th scope="col">Answers:</th>
+				</tr>
+			</thead>
+			<tbody>        
+		{% for question in data.questions %}
+				<tr>
+					<th scope="row">{{ forloop.counter }}</th>
+					<td>{{question.question}}</td>
+					<td>{{question.answers | join:','}}</td>
+				</tr>
+        {% endfor %}
+			</tbody>
+		</table>
+	</div>
+	<div class="card-footer text-muted">
+		Quizz Taken: {{ taken_quizz.date }}
+	</div>
+</div>
+{% block scripts %}
+	{{ block.super }}
+	<script src="{% static "js/circle-progress.js" %}"></script>
+{% endblock %}
+<script type="text/javascript">
+	$('.table').hide();
+	msgs = ["Congrats! you passed the test", "Sorry, you didn't pass the test, try later"]
+	score = {{ taken_quizz.score }}
+	if(score > 50){
+		$('#msg').text(msgs[0]);
+		$('#score').addClass('badge-success');
+	}else{
+		$('#msg').text(msgs[1]);
+		$('#score').addClass('badge-danger');
+	}
+	$('#see_answers').on('click', function(){
+		$('.table').toggle();
+		let text = $(this).text();
+		$(this).text(
+			text == "See answers" ? "Hide answers" : "See answers"
+			);
+	});
+	$('.circle').circleProgress({
+value: score/100,
+size: 160,
+fill: {
+gradient: ["#01a9b4", "purple"]
+}
+}).on('circle-animation-progress', function(event, progress) {
+$('#score').html(Math.round(score * progress) + '<i>%</i>');
+	// console.log($(this));
+	// $('#circle').html($('#circle').html().trim());
+});
+</script>
+{% endblock %}
