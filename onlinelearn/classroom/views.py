@@ -14,6 +14,10 @@ from .forms import *
 from .models import User, Subject
 import json
 
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}
+
 def is_teacher(user):
 	'''for the user passes test decorator'''
 	return user.is_teacher
@@ -27,16 +31,19 @@ def is_takenquizz_owner(view_func):
 		return view_func(request, *args, **kwargs)
 	return decorator
 
-def SignupView(request, usertype):
+def SignupView(request, usertype=''):
 	if request.user.is_authenticated:
 		return redirect('private-profile')
-	if usertype != 'student' and usertype != 'teacher':
-		raise Http404("Unvalid type of user. Only teacher/student are valid.")
+	if usertype != 'student' and usertype != 'teacher' and usertype != '' :
+
+		messages.error(request, 'Invalid type of user.')
+		return redirect("signup")
 	if request.method == 'POST':
 		if usertype == 'student':
 			form = StudentSignUpForm(request.POST)
-		else:
+		elif usertype == 'teacher':
 			form = TeacherSignUpForm(request.POST)
+
 		if form.is_valid():
 			user = form.save(commit=False)
 			user.is_active = False
@@ -50,15 +57,14 @@ def SignupView(request, usertype):
 				'token': account_activation_token.make_token(user),
 			})
 			user.email_user(subject, message)
-			messages.success(request, 'Sign Up successful, Check your email to confirm')
+			messages.success(request, 'Sign Up successful, Check your email to confirm.')
 			return redirect('login')
-	else:
-		if usertype == 'student':
-			form = StudentSignUpForm()
 		else:
-			form = TeacherSignUpForm()
-
-	return render(request, 'auth/signup.html', {"form":form})
+			for field in form.errors.as_data():
+				messages.error(request,field +' : '+ form.errors[field].as_text()[1:])
+			return render(request, 'auth/signup.html', {"form":form})
+	interests = Subject.objects.all()
+	return render(request, 'auth/signup.html', {"interests":interests})
 
 def ActivateView(request, uidb64, token):
 	try:
@@ -72,8 +78,11 @@ def ActivateView(request, uidb64, token):
 		user.email_confirmed = True
 		user.save()
 		login(request, user)
+
+		messages.success(request,'Email Confirmed.')
 		return redirect('home')
 	else:
+		messages.error(request,'Invalid email confirmation token.')
 		return redirect('login')
 
 
@@ -92,6 +101,9 @@ def LoginView(request):
 		user = authenticate(username=username, password=password)
 		if user is not None:
 			login(request, user)
+			next_url = request.GET.get('next')
+			if next_url:
+				return redirect(next_url)
 			return redirect('home')
 		else:
 			messages.error(request, 'Invalid Credentials.')
@@ -100,7 +112,7 @@ def LoginView(request):
 @login_required
 def LogoutView(request):
 	logout(request)
-	messages.success('You are logged out.')
+	messages.success(request, 'You are logged out.')
 	return redirect('home')
 
 def ProfileView(request, username):
@@ -202,3 +214,5 @@ def TakenQuizzView(request, pk):
 
 	return render(request, 'result-quizz.html', {'taken_quizz' : taken_quizz, 'data':data})
 
+def HomeView(request):
+	return render(request, 'home.html')

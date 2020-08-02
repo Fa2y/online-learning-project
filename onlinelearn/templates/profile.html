@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {%  block content %}
-    <div class="content-section">
-      <div class="media">
-        <img class="rounded-circle account-img" src="{{ user.profile_pic.url }}">
-        <div class="media-body">
-          <h2 class="account-heading">{{ user.username }}</h2>
-          <p class="text-secondary">{{ user.email }}</p>
-        </div>
-      </div>
-    </div>
+
+    <div class="card" style="width: 20rem;">
+  <img class="card-img-top rounded-circle" height="250" width="20" src="{{ user.profile_pic.url }}" alt="Profile Picture">
+  <div class="card-body">
+    <h5 class="card-title">{{ user.username }}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">{{ user.email }}</h6>
+    <p class="card-text">{{ user.bio }}</p>
+  </div>
+</div>
 
 {% endblock %}

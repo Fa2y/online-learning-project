@@ -1,23 +1,48 @@
-    {% block main %}
+{% extends "base.html" %}
+{% block content %}
 
-    <form class="form-horizontal" name="LoginForm" action="/login/" method="post">
+    <form class="text-center border border-light p-5" name="LoginForm" action="{{ login_url }}?next={{request.path}}" method="post">
+            <p class="h4 mb-4">Login in</p>
+
     {% csrf_token %}
     {% if next %}
         <input type="hidden" name="next" value="{{ next }}" />
     {% endif %}
-    <label class="control-label" for="username">Username</label>
-            <input type="text" id="username" value="{{username}}" name="username" placeholder="Username">
-        <label class="control-label" for="password">Password</label>
-                <input type="password" name="password" id="password" placeholder="Password">
+            <input class="form-control mb-4" type="text" id="username" value="{{username}}" name="username" placeholder="Username">
+                <input class="form-control mb-4" type="password" name="password" id="password" placeholder="Password">
+   <div class="d-flex justify-content-around">
+        <div>
+            <!-- Remember me -->
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="defaultLoginFormRemember">
+                <label class="custom-control-label" for="defaultLoginFormRemember">Remember me</label>
+            </div>
+        </div>
+        <div>
+            <!-- Forgot password -->
+            <a href="">Forgot password?</a>
+        </div>
+    </div>
 
-            <button type="submit" class="btn">Login</button>
-    </form>
-    {% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
+    <!-- Sign in button -->
+    <button class="btn btn-info btn-block my-4" type="submit">Sign in</button>
 
-    {% endblock %}
+    <!-- Register -->
+    <p>Not a member?
+        <a href="{% url 'signup' %}">Sign up</a>
+    </p>
+
+    <!-- Social login -->
+    <p>or sign in with:</p>
+
+    <a href="#" class="mx-2" role="button"><i class="fab fa-facebook-f light-blue-text"></i></a>
+    <a href="#" class="mx-2" role="button"><i class="fab fa-twitter light-blue-text"></i></a>
+    <a href="#" class="mx-2" role="button"><i class="fab fa-linkedin-in light-blue-text"></i></a>
+    <a href="#" class="mx-2" role="button"><i class="fab fa-github light-blue-text"></i></a>
+
+</form>
+{% block scripts %}
+  {{ block.super }}
+{% endblock %}
+{% endblock %}
+

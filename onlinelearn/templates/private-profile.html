@@ -26,4 +26,7 @@
     <button type="submit">Update</button>
   </form>
    <iframe src="{% url 'change-password' %}" title="Change Password:"></iframe> 
+  {% block scripts %}
+  {{ block.super }}
+{% endblock %}
 {% endblock %}

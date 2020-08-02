@@ -4,19 +4,20 @@
 	<head>
 		<!-- Required meta tags always come first -->
 		<title>
-		Online Learn
+		Online | Learn
 		</title>
+		<link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700" rel="stylesheet">
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-		<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
+		<link rel="stylesheet" type="text/css" href="{% static "css/mdb.min.css"%}">
 		<link rel="stylesheet" type="text/css" href="{% static "css/navbar.css"%}">
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 	</head>
-	<body>
+	<body >
 		<div class="wrapper">
 			<!-- Sidebar Holder -->
-			<nav id="sidebar" class="active">
+			<nav id="sidebar" class="active" style="margin-top: 70px">
 				<div class="sidebar-header">
 					<h3>Bootstrap Sidebar</h3>
 				</div>
@@ -50,35 +51,80 @@
 						<a href="#">Contact</a>
 					</li>
 				</ul>
-				<ul class="list-unstyled CTAs">
-					<li><a href="https://bootstrapious.com/p/bootstrap-sidebar" class="article">Back to the article</a></li>
-				</ul>
 			</nav>
 			<!-- Page Content Holder -->
 			<div id="content">
-				<nav class="navbar ">
-					<div class="container-fluid">
-						<div class="navbar-header">
-							<button type="button" id="sidebarCollapse" class="navbar-btn active">
-							<span></span>
-							<span></span>
-							<span></span>
-							</button>
-						</div>
-						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-							<ul class="nav navbar-nav navbar-right">
-								<li><a href="#">Page</a></li>
-								<li><a href="#">Page</a></li>
-								<li><a href="#">Page</a></li>
-								<li><a href="#">Page</a></li>
-							</ul>
-						</div>
+				<nav class="mb-1 shadow-lg navbar fixed-top navbar-expand-lg " style="height: 70px;background-color: #3C096C;">
+					<div class="navbar-header mr-4">
+						<button type="button" id="sidebarCollapse" class="navbar-btn purple-gradient active">
+						<span></span>
+						<span></span>
+						<span></span>
+						</button>
+					</div>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-555"
+					aria-controls="navbarSupportedContent-555" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+					</button>
+					<a class="navbar-brand font-weight-bold" id="title" style="color: #7b6e6e96;font-family: 'Baloo Da 2', cursive;" href="{% url 'home' %}">O|L</a>
+					<div class="collapse navbar-collapse" id="navbarSupportedContent-555">
+						<ul class="navbar-nav mr-auto">
+							<li class="nav-item active">
+								<a class="nav-link" href="#">Home
+									<span class="sr-only">(current)</span>
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="#">Features</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="#">Pricing</a>
+							</li>
+						</ul>
+						<ul class="navbar-nav ml-auto nav-flex-icons">
+							{% if request.user.is_authenticated %}
+								<li class="nav-item avatar dropdown">
+									<a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-55" data-toggle="dropdown"
+										aria-haspopup="true" aria-expanded="false">
+										<img src="{{ request.user.profile_pic.url }}" class="rounded-circle z-depth-0"
+										alt="{{ user.get_username }}" height="45" width="45">
+									</a>
+									<div class="dropdown-menu dropdown-menu-lg-right dropdown-secondary"
+										aria-labelledby="navbarDropdownMenuLink-55">
+										<a class="dropdown-item" href="{% url 'private-profile' %}">Profile</a>
+										<a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
+									</div>
+								</li>
+							{% else %}
+								<li class="nav-item">
+									<a class="btn rounded-pill aqua-gradient" href="{% url 'login' %}">Login</a>
+								</li>
+								<li class="nav-item">
+									<a class="btn rounded-pill blue-gradient" href="{% url 'signup' %}">Sign Up</a>
+								</li>
+							{% endif %}
+						</ul>
 					</div>
 				</nav>
-			</div>
-			<div class="container" style="margin-top: 20px">
+				<div class="container mx-auto mt-5" >
+					{% if messages %}
+						<ul class="list-unstyled messages mt-5">
+							{% for message in messages %}
+								{% if message.tags == 'error' %}
+								<li><div class="alert alert-danger alert-dismissible fade show" role="alert">{{ message }}
+								{% else %}
+								<li><div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">{{ message }}
+								{% endif %}
+									<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+							</li>
+						{% endfor %}
+					</ul>
+				{% endif %}
 				<div class="row justify-content-center">
-					<div class="col-10">
+					<div class="col-50 mt-5">
 						{% block content %}
 							{% block scripts %}
 								<script src="http://code.jquery.com/jquery-3.2.1.min.js"
@@ -86,6 +132,7 @@
 								crossorigin="anonymous"></script>
 								<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 								<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+								<script type="text/javascript" src="{% static "js/mdb.min.js" %}"></script>
 							{% endblock %}
 						{% endblock %}
 						<script type="text/javascript">
@@ -93,7 +140,7 @@
 							$('body').on("click", "#list_toggle",function(){
 								$(this).find('i').toggleClass("fa-chevron-up");
 								$(this).find('i').toggleClass("fa-chevron-down");
-							});		
+									});
 							$("#sidebarCollapse").on("click", function() {
 								$("#sidebar").toggleClass("active");
 								$(this).toggleClass("active");
@@ -103,5 +150,7 @@
 					</div>
 				</div>
 			</div>
-		</body>
-	</html>
+		</div>
+	</div>
+</body>
+</html>
