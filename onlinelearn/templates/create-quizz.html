@@ -69,46 +69,31 @@ border-radius: 50%;
 }
 </style>
 <form method="post" >
-	    {% csrf_token %}
+	{% csrf_token %}
 	<div class="form-group row">
 		<label class="col-sm-2 col-form-label">Quizz Name:</label>
 		<div class="col-sm-10">
 			<input class="form-control form-control-lg" name='quizzname' type="Quizz" placeholder="Quizz name">
 		</div>
 	</div>
-	<div class="form-group row">
-		<label class="col-sm-2 col-form-label">Subject:</label>
-		<div class="col-sm-10">
-			<select name='subject' class="form-control">
-					<option disabled>Select Subject:</option>
-				{% for subject in subjects %}
-					<option>{{ subject.name }}</option>
-				{% endfor %}
-			</select>
-		</div>
-	</div>
-	<div class="container">
+	<div id='interests'>
+      <label class="mdb-main-label mt-4">Select Subject:</label>
+      <select class="selectpicker" name="subject" data-live-search="true" data-width="75%" >
+        {% for subject in subjects %}
+          <option value="{{ forloop.counter }}" title="{{ subject.name }}" data-tokens="{{ subject.name }}" >{{ subject.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+	<div class="container" style="margin-top: 10px">
 		<div class="row">
 			<div class="control-group" id="fields" >
 				<label class="control-label" for="field1">Questions:</label>
-				<small>Press <svg width="1.5em" height="1.25em" viewBox="0 0 16 16" class="bi bi-plus" fill="green" xmlns="http://www.w3.org/2000/svg">
-					<path fill-rule="evenodd" d="M8 3.5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H4a.5.5 0 0 1 0-1h3.5V4a.5.5 0 0 1 .5-.5z"/>
-					<path fill-rule="evenodd" d="M7.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0V8z"/>
-					<path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-				</svg> to add another question</small>
 				<div class="Question">
 					<div class="controls">
 						<div class="entry">
 							<div class="input-group mb-3" >
-								<input class="form-control" style="margin-top: 20px" name="question" type="text" placeholder="question text" />
+								<input class="form-control" style="margin-top: 5px" name="question" type="text" placeholder="question text" />
 								<div class="input-group-append">
-									<button class="btn btn-success btn-add" style="margin-top: 20px" type="button">
-									<svg width="1.5em" height="1.25em" viewBox="0 0 16 16" class="bi bi-plus" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-										<path fill-rule="evenodd" d="M8 3.5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H4a.5.5 0 0 1 0-1h3.5V4a.5.5 0 0 1 .5-.5z"/>
-										<path fill-rule="evenodd" d="M7.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0V8z"/>
-										<path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-									</svg>
-									</button>
 									<br>
 									<br>
 								</div>
@@ -118,13 +103,14 @@ border-radius: 50%;
 									<table class="table table-bordered table-hover table-sortable" id="tab_logic">
 										<thead>
 											<tr >
-												<th class="text-center">
+												<th class="text-center p-4">
 													Answers
 												</th>
-												<th class="text-center">
+												<th class="text-center p-4">
 													Is correct
 												</th>
-												<th class="text-center" style="border-top: 1px solid #ffffff; border-right: 1px solid #ffffff;">
+												<th class="text-center" >
+													<a id="add_row" class="btn btn-primary p-2">Add Answer</a>
 												</th>
 											</tr>
 										</thead>
@@ -135,32 +121,37 @@ border-radius: 50%;
 												</td>
 												<td data-name="is_correct">
 													
-														<label class="switch">
+													<label class="switch">
 														<input class="switch" name='is_correct' type="checkbox">
 														<span class="slider round"></span>
 														Correct
 													</label>
 												</td>
 												<td data-name="del">
-													<button name="del0" class='btn btn-danger row-remove' ><span aria-hidden="true">×</span></button>
+													<button name="del0" class='btn btn-danger row-remove' ><i class="fas fa-lg fa-minus-square"></i></button>
 												</td>
 											</tr>
 										</tbody>
 									</table>
 								</div>
 							</div>
-							<a id="add_row" class="btn btn-primary float-right">Add Answer</a>
+							<button class="btn btn-info btn-add float-right" data-toggle="tooltip" title="Add next question" style="margin-top: 20px" type="button">
+							<i class="fas fa-lg fa-plus-circle"></i>
+							</button>
+							<small>Press <i class="fas fa-plus-circle" style="color: blue" ></i> to add another question</small>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	 <button class="btn btn-success float-right" type="submit" style="margin-top: 10px">Save Quizz</button>
+	<button class="btn btn-success float-right" type="submit" style="margin-top: 10px">Save Quizz</button>
 </form>
 {% block scripts %}
 	{{ block.super }}
-	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
 	<script type="text/javascript" src="{% static "js/create-quizz.js" %}"></script>
 {% endblock %}
 {% endblock %}

@@ -1,27 +1,28 @@
 $(function() { //////source:https://bootsnipp.com/snippets/ykXa
     console.log("I am not a front-end dev I just copy and paste what I find cool and try to add the source too");
-    $(document).on('click', '.btn-add', function(e) {
-        e.preventDefault();
-        var controlForm = $('.Question div:first'),
-            currentEntry = $(this).parents('.entry:first'),
-            newEntry = $(currentEntry.clone()).appendTo(controlForm);
+    // $(document).on('click', '.btn-add', function(e) {
+    //     e.preventDefault();
+    //     var controlForm = $('.Question div:first'),
+    //         currentEntry = $(this).parents('.entry:first'),
+    //         newEntry = $(currentEntry.clone()).appendTo(controlForm);
 
-        newEntry.find('input').val('');
-        controlForm.find('.entry:not(:last) .btn-add')
-            .removeClass('btn-add').addClass('btn-remove')
-            .removeClass('btn-success').addClass('btn-danger')
-            .html('<svg width="1.5em" height="1.25em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">\
-  <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>\
-  <path fill-rule="evenodd" d="M11.854 4.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708l7-7a.5.5 0 0 1 .708 0z"/>\
-  <path fill-rule="evenodd" d="M4.146 4.146a.5.5 0 0 0 0 .708l7 7a.5.5 0 0 0 .708-.708l-7-7a.5.5 0 0 0-.708 0z"/>\
-</svg>');
-    }).on('click', '.btn-remove', function(e) {
-        $(this).parents('.entry:first').remove();
+    //     newEntry.find('input').val('');
+    //     controlForm.find('.entry:not(:last) .btn-add')
+    //         .removeClass('btn-add').addClass('btn-remove')
+    //         .removeClass('btn-success').addClass('btn-danger')
+    //         .html('<i class="fas fa-lg fa-minus-circle"></i>');
+    // }).on('click', '.btn-remove', function(e) {
+    //     $(this).parents('.entry:first').remove();
 
-        e.preventDefault();
-        return false;
-    });
-
+    //     e.preventDefault();
+    //     return false;
+    // }); 
+          var newStyle = document.createElement("link");
+      newStyle.rel = "stylesheet";
+      newStyle.href = "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css";
+      document.getElementsByTagName("head")[0].appendChild(newStyle);
+      $('[data-toggle="tooltip"]').tooltip()
+      $('.btn-add').tooltip('show');
     /////source:https://bootsnipp.com/snippets/kMp2V
     $('body').on("click", "#add_row", function() {
         // Dynamic Rows Code

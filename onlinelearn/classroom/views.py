@@ -169,6 +169,30 @@ def CreateQuizzView(request):
 		subjects = Subject.objects.all()
 		return render(request, 'create-quizz.html',{'subjects':subjects})
 
+@login_required
+@user_passes_test(is_teacher, )
+def QuizzNextView(request):
+	print(request.POST)
+	subjects = Subject.objects.all()
+	return render(request, 'create-quizz.html',{'subjects':subjects})
+	if request.POST:
+		data = request.POST
+		sub = Subject.objects.filter(id = data['subject'] ).first()
+		user = request.user
+		quizz = Quizz.objects.create( title = data['quizzname'], subject = sub, author = user)
+		qst = Question.objects.create(text = data['question'], quizz = quizz)
+		for answr in data['answers']:
+			answer = Answer.objects.create(question = qst, text = answr)
+			if index == question['correctIndex']:
+				answer.is_correct = True
+				answer.save()
+			index += 1
+	else:
+		raise Http404('Not permitted')
+
+def QuizzAddQstView(request):
+	pass
+
 @csrf_exempt
 @login_required
 def PassQuizzView(request, pk):
