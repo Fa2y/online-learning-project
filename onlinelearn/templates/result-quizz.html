@@ -26,7 +26,7 @@
 				<tr>
 					<th scope="row">{{ forloop.counter }}</th>
 					<td>{{question.question}}</td>
-					<td>{{question.answers | join:','}}</td>
+					<td>{{question.answers | join:', '}}</td>
 				</tr>
         {% endfor %}
 			</tbody>

@@ -31,6 +31,16 @@ def is_takenquizz_owner(view_func):
 		return view_func(request, *args, **kwargs)
 	return decorator
 
+def is_quizz_owner(view_func):
+	def decorator(request, *args, **kwargs):
+		pk = kwargs["quizzid"]
+		quizz = get_object_or_404(Quizz, pk=pk)
+		if not (quizz.author.id == request.user.id):
+			return HttpResponse("You can't edit this quizz", status = 403)
+		return view_func(request, *args, **kwargs)
+		print(repr(view_func))
+	return decorator
+
 def SignupView(request, usertype=''):
 	if request.user.is_authenticated:
 		return redirect('private-profile')
@@ -157,42 +167,82 @@ def ChangePasswordView(request):
 		'form': form
 	})
 
+
 @login_required
 @user_passes_test(is_teacher, )
 def CreateQuizzView(request):
+	# subjects = Subject.objects.all()
+	# return render(request, 'create-quizz.html',{'subjects':subjects})
 	if request.POST:
-		data = request.POST
-		quizzname = data['quizzname']
-		subject = data['subject']
-		questions
+		data = dict(request.POST)
+		sub = Subject.objects.filter(id = data['subject'][0]).first()
+		user = request.user
+		quizz = Quizz.objects.create( title = data['quizzname'][0], subject = sub, author = user)
+		qst = Question.objects.create(text = data['question'][0], quizz = quizz)
+		index = 0
+		if "correctIndex[]" not in data.keys():
+			messages.error(request, 'You need at least one correct answer.')
+			subjects = Subject.objects.all()
+			return render(request, 'create-quizz.html',{'subjects':subjects})
+		for answr in data['answers[]']:
+			answer = Answer.objects.create(question = qst, text = answr)
+			if index in data['correctIndex[]']:
+				answer.is_correct = True
+				answer.save()
+			index += 1
+		if "nextQst" in data.keys():
+			return redirect('/quizz/create/'+str(quizz.pk))
+		else:
+			return redirect('/quizz/create/complete/'+str(quizz.pk))
 	else:
 		subjects = Subject.objects.all()
 		return render(request, 'create-quizz.html',{'subjects':subjects})
 
 @login_required
 @user_passes_test(is_teacher, )
-def QuizzNextView(request):
-	print(request.POST)
-	subjects = Subject.objects.all()
-	return render(request, 'create-quizz.html',{'subjects':subjects})
+@is_quizz_owner
+def QuizzAddQstView(request, quizzid):
+	quizz = get_object_or_404(Quizz, pk=quizzid)
 	if request.POST:
-		data = request.POST
-		sub = Subject.objects.filter(id = data['subject'] ).first()
-		user = request.user
-		quizz = Quizz.objects.create( title = data['quizzname'], subject = sub, author = user)
-		qst = Question.objects.create(text = data['question'], quizz = quizz)
-		for answr in data['answers']:
+		data = dict(request.POST)
+		qst = Question.objects.create(text = data['question'][0], quizz = quizz)
+		index = 0
+		if "correctIndex[]" not in data.keys():
+			messages.error(request, 'You need at least one correct answer.')
+			subjects = Subject.objects.all()
+			return render(request, 'create-quizz.html',{'subjects':subjects})
+		for answr in data['answers[]']:
 			answer = Answer.objects.create(question = qst, text = answr)
-			if index == question['correctIndex']:
+			if index in data['correctIndex[]']:
 				answer.is_correct = True
 				answer.save()
 			index += 1
+		if "nextQst" in data.keys():
+			return redirect('/quizz/create/'+str(quizz.pk))
+		else:
+			return redirect('/quizz/create/complete/'+str(quizz.pk))
 	else:
-		raise Http404('Not permitted')
+		questions = Question.objects.filter(quizz=quizz)
+		data = {'questions':[]}
+		for question in questions:
+			answers = Answer.objects.filter(question = question).values_list('text', flat = True)
+			data['questions'].append({'text':question.text,"answers":answers})
+		return render(request, 'create-quizz-add-qst.html',{'quizz':quizz, 'data':data})
 
-def QuizzAddQstView(request):
-	pass
+@login_required
+@user_passes_test(is_teacher, )
+@is_quizz_owner
+def QuizzCompleteView(request, quizzid):
+	quizz = get_object_or_404(Quizz, pk = quizzid)
+	questions = Question.objects.filter(quizz=quizz)
+	data = {'questions':[]}
+	for question in questions:
+		answers = Answer.objects.filter(question = question)
+		correct_answers = Answer.objects.filter(question = question, is_correct = True)
+		print(correct_answers)
+		data['questions'].append({'question':question.text,"answers":answers, 'correct_answers':correct_answers})
 
+	return render(request, 'create-quizz-complete.html', {'quizz':quizz,'data':data})
 @csrf_exempt
 @login_required
 def PassQuizzView(request, pk):

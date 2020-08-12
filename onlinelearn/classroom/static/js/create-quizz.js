@@ -17,12 +17,70 @@ $(function() { //////source:https://bootsnipp.com/snippets/ykXa
     //     e.preventDefault();
     //     return false;
     // }); 
-          var newStyle = document.createElement("link");
+    //for adding stylesheet dynamicly to the page bcuz the html header is in base.html 
+    var newStyle = document.createElement("link");
       newStyle.rel = "stylesheet";
       newStyle.href = "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css";
       document.getElementsByTagName("head")[0].appendChild(newStyle);
+      //for the tooltip and show on load
       $('[data-toggle="tooltip"]').tooltip()
       $('.btn-add').tooltip('show');
+      $('form').submit(false);
+      var xhr = new XMLHttpRequest();
+      $('body').on('click','.btn-success', function(){
+        //for saving the quizz
+        // console.log(this)
+        $(this).html('<span class="spinner-border" role="status" aria-hidden="true"></span>')
+        data = {'answers':[],'correctIndex':[]};
+        formdata = $('form').serializeArray();
+        correct_index = []
+        formdata.forEach(function (element){
+            if(element.name.startsWith('answer')){
+                data['answers'].push(element.value);
+            }else if(element.name.startsWith('is_correct')){
+                correct_index.push(element.name.slice(10))
+            }else{
+                data[element.name] = element.value;
+            }
+        });
+        formdata.forEach(function (element){
+            if(element.name.startsWith('answer') && correct_index.includes(element.name.slice(6))){
+                data['correctIndex'].push(data['answers'].indexOf(element.value))
+            }
+        });
+
+        console.log(data);
+        $.ajax({url : document.location,type: 'POST', data: data, xhr : function (){ return xhr;},success : function(response){document.location.href = xhr.responseURL;}});
+      });
+      $('body').on('click','.btn-add', function(){
+        // for adding another question to the quizz
+        $(this).html('<span class="spinner-border" role="status" aria-hidden="true"></span>')
+        data = {'answers':[],'correctIndex':[]};
+        formdata = $('form').serializeArray();
+        correct_index = []
+        formdata.forEach(function (element){
+            if(element.name.startsWith('answer')){
+                data['answers'].push(element.value);
+            }else if(element.name.startsWith('is_correct')){
+                correct_index.push(element.name.slice(10))
+            }else{
+                data[element.name] = element.value;
+            }
+        });
+        formdata.forEach(function (element){
+            if(element.name.startsWith('answer') && correct_index.includes(element.name.slice(6))){
+                data['correctIndex'].push(data['answers'].indexOf(element.value))
+            }
+        });
+        data['nextQst'] = '';
+        console.log(data);
+        
+        $.ajax({url : document.location,type: 'POST', data: data, xhr : function (){ return xhr;},success : function(response){document.location.href = xhr.responseURL;}});
+
+      });
+
+
+
     /////source:https://bootsnipp.com/snippets/kMp2V
     $('body').on("click", "#add_row", function() {
         // Dynamic Rows Code
