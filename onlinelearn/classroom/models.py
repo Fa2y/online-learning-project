@@ -19,14 +19,14 @@ class User(AbstractUser):
 	is_student = models.BooleanField(default=False)
 	is_teacher = models.BooleanField(default=False)
 	establishment = models.CharField(max_length=50, help_text='The establishment you teach/study in.')
-	bio = models.CharField(max_length=400)
+	bio = models.CharField(max_length=400, blank=True)
 	profile_pic = models.ImageField(upload_to=wrapperuser, default="profile/default.jpg")
 	email_confirmed = models.BooleanField(default=False)
 
 	def save(self, *args, **kwargs):
 		super().save(*args, **kwargs)
 		img = Image.open(self.profile_pic.path)
-		if img.height > 300 or img.width > 300:
+		if img.height > 600 or img.width > 600:
 			img.thumbnail((300,300))
 			print("image edited")
 			img.save(self.profile_pic.path)
@@ -76,7 +76,7 @@ class Answer(models.Model):
 class TakenQuizz(models.Model):
 	quizz = models.ForeignKey(Quizz, on_delete=models.SET_NULL, null=True)
 	user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-	score = models.FloatField()
+	score = models.DecimalField(max_digits=5, decimal_places=2)
 	date = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):

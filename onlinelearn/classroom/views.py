@@ -142,13 +142,21 @@ def PrivateProfileView(request):
 			form.save()
 			messages.success(request, 'Your profile updated successfully.')
 			return redirect('private-profile')
+		else:
+			for field in form.errors.as_data():
+				messages.error(request,field +' : '+ form.errors[field].as_text()[1:])
+			return redirect('private-profile')
+
 	else:
+		taken_quizz = TakenQuizz.objects.filter(user=request.user)
 		if request.user.is_teacher:
 			form = TeacherProfileUpdateForm(instance = request.user)
+			return render(request, 'private-profile.html', {"form":form.initial, "taken_quizz":taken_quizz})
 		else:
 			form = StudentProfileUpdateForm(instance = request.user)
+			subjects = Student.objects.get(user=request.user).interests
 
-		return render(request, 'private-profile.html', {"form":form})
+			return render(request, 'private-profile.html', {"form":form.initial, "subjects":subjects, "taken_quizz":taken_quizz})
 
 @login_required
 def ChangePasswordView(request):
@@ -163,6 +171,7 @@ def ChangePasswordView(request):
 			messages.error(request, 'Please correct the error below.')
 	else:
 		form = PasswordChangeForm(request.user)
+		print(vars(form))
 	return render(request, 'auth/change_password.html', {
 		'form': form
 	})

@@ -1,14 +1,57 @@
 {% extends "base.html" %}
 
 {%  block content %}
-
-    <div class="card" style="width: 20rem;">
-  <img class="card-img-top rounded-circle" height="250" width="20" src="{{ user.profile_pic.url }}" alt="Profile Picture">
+	
+<div class="card" style="width: 20rem;">
+  <img class="card-img-top img-rounded img-responsive  img-thumbnail" height="250" width="20" src="{{ user.profile_pic.url }}" alt="Profile Picture">
   <div class="card-body">
-    <h5 class="card-title">{{ user.username }}</h5>
-    <h6 class="card-subtitle mb-2 text-muted">{{ user.email }}</h6>
-    <p class="card-text">{{ user.bio }}</p>
+    <h4 class="card-title">{{ user.username }}</h5>
+    <p>{{ user.first_name }} {{ user.last_name }}</p>
+    <br />
+    <p class="card-subtitle mb-2 text-muted"><i class="fas fa-at"></i> {{ user.email }}</p>
+    <br />
+    <p class="card-subtitle mb-2 text-muted"><i class="fas fa-school"></i> {{ user.establishment }}</p>
+    <br />
+    <p class="card-text"><strong>Bio:</strong> {{ user.bio }}</p>
   </div>
 </div>
-
+<!-- <div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            <div class="well well-sm">
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <img src="{{ user.profile_pic.url }}" alt="" class="img-rounded img-responsive" />
+                    </div>
+                    <div class="col-sm-6 col-md-8">
+                        <h4>Bhaumik Patel</h4>
+                        <p>
+                            <i class="fas fa-at"></i>email@example.com
+                            <br />
+                            <i class="fas fa-school"></i><span>www.jquery2dotnet.com</span>
+                            <br />
+                   
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary">
+                                Social</button>
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span><span class="sr-only">Social</span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">Twitter</a></li>
+                                <li><a href="https://plus.google.com/+Jquery2dotnet/posts">Google +</a></li>
+                                <li><a href="https://www.facebook.com/jquery2dotnet">Facebook</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Github</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+{% block scripts %}
+	{{ block.super }}
+{% endblock %}
 {% endblock %}
