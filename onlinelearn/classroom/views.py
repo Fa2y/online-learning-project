@@ -76,6 +76,40 @@ def SignupView(request, usertype=''):
 	interests = Subject.objects.all()
 	return render(request, 'auth/signup.html', {"interests":interests})
 
+def PasswordResetView(request):
+	if request.method == "POST":
+		if User.objects.filter(email = request.POST['email']).exists():
+			user = User.objects.get(email = request.POST['email'])
+			site = get_current_site(request)
+			subject = 'Reset Password Your OnlineLearn Account'
+			message = render_to_string('auth/password_reset_email.html', {
+				'user': user,
+				'domain': site.domain,
+				'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+				'token': account_activation_token.make_token(user),
+			})
+			user.email_user(subject, message)
+		messages.success(request, '''We've emailed you instructions for setting your password, if an account exists with the email you entered. You should receive them shortly. 
+If you don't receive an email, please make sure you've entered the address you registered with, and check your spam folder.''')
+		return redirect('login')
+
+	else:
+		return render(request, 'auth/password-reset.html')
+
+def PasswordResetConfirmView(request, uidb64, token):
+	try:
+		uid = force_text(urlsafe_base64_decode(uidb64))
+		user = User.objects.get(pk=uid)
+	except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+		user = None
+	if user is not None and account_activation_token.check_token(user, token):
+		login(request, user)
+		messages.success(request, 'Password reset request confirmed, please proceed with the password change')
+		return redirect('change-password')
+
+	else:
+		messages.error(request,'Invalid token.')
+		return redirect('login')	
 def ActivateView(request, uidb64, token):
 	try:
 		uid = force_text(urlsafe_base64_decode(uidb64))

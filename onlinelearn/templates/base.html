@@ -7,7 +7,7 @@
 		Online | Learn
 		</title>
 		<link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
-		<link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700" rel="stylesheet">
+		<!-- <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700" rel="stylesheet"> -->
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
@@ -16,70 +16,73 @@
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 	</head>
 	<body >
+	
 		<div class="wrapper">
 			<!-- Sidebar Holder -->
-			<nav id="sidebar" class="active" style="margin-top: 70px">
-				<div class="sidebar-header">
-					<h3>Bootstrap Sidebar</h3>
-				</div>
-				<ul class="list-unstyled components">
-					<p>Dummy Heading</p>
-					<li class="active">
-						<a id="list_toggle" href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">Home
-							<i class="fas fa-chevron-down" style="float: right"></i>
-						</a>
-						<ul class="collapse list-unstyled" id="homeSubmenu">
-							<li><a href="#">Home 1</a></li>
-							<li><a href="#">Home 2</a></li>
-							<li><a href="#">Home 3</a></li>
-						</ul>
-					</li>
-					<li>
-						<a href="#">About</a>
-						<a id="list_toggle" href="#pageSubmenu" data-toggle="collapse" aria-expanded="false">Pages
-							<i class="fas fa-chevron-down" style="float: right"></i>
-						</a>
-						<ul class="collapse list-unstyled" id="pageSubmenu">
-							<li><a href="#">Page 1</a></li>
-							<li><a href="#">Page 2</a></li>
-							<li><a href="#">Page 3</a></li>
-						</ul>
-					</li>
-					<li>
-						<a href="#">Portfolio</a>
-					</li>
-					<li>
-						<a href="#">Contact</a>
-					</li>
-				</ul>
-			</nav>
+			{% if request.user.is_authenticated %}
+				<nav id="sidebar" class="active" style="margin-top: 54px">
+					<div class="sidebar-header">
+						<img class="card-img-top rounded-circle img-responsive img-thumbnail" style="align-content: center;" src="{{ user.profile_pic.url }}" alt="Profile Picture">
+					</div>
+					<ul class="list-unstyled components">
+						<p style="text-align: center;color: #341f97;font-size: 16px;font-weight: 600;margin-bottom: 0px;">{{ user.username }}</p>
+						{% if user.is_student %}
+							<p style="text-align: center;color: #4834d4;font-size: 12px;font-weight: 600;margin-top: 0px"><i class="fas fa-user-graduate"></i> STUDENT</p>
+						{% else %}
+							<p style="text-align: center;color: #4834d4;font-size: 12px;font-weight: 600;margin-top: 0px"><i class="fas fa-chalkboard-teacher"></i> TEACHER</p>
+						{% endif %}
+						<li class="active">
+							<a href="/"><i class="fas fa-home"></i> Home</a>
+						</li>
+						<li>
+							<a id="list_toggle" href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-user"></i> Profile
+								<i class="fas fa-chevron-down" style="float: right"></i>
+							</a>
+							<ul class="collapse list-unstyled" id="pageSubmenu">
+								<li><a href="/profile/{{ user.username }}"><i class="fas fa-id-card"></i> Profile Overview</a></li>
+								<li><a href="/account/profile/"><i class="fas fa-user-edit"></i> Edit Profile</a></li>
+							</ul>
+						</li>
+						<li>
+							<a href="#"><i class="fas fa-clipboard-list"></i> Explore Quizzes</a>
+						</li>
+						{% if user.is_teacher %}
+							<li>
+								<a href="/quizz/create"><i class="fas fa-folder-plus"></i> Create Quizz</a>
+							</li>
+						{% endif %}
+					</ul>
+				</nav>
+			{% endif %}
+
 			<!-- Page Content Holder -->
 			<div id="content">
-				<nav class="mb-1 shadow-lg navbar fixed-top navbar-expand-lg " style="height:  56px;background-color: #3C096C;">
-					<div class="navbar-header mr-4">
-						<button type="button" id="sidebarCollapse" class="navbar-btn purple-gradient active">
-						<span></span>
-						<span></span>
-						<span></span>
-						</button>
-					</div>
+			<div class="header sticky sticky-top">
+				<nav class="mb-1 shadow-none navbar navbar-expand-lg ">
+					{% if request.user.is_authenticated %}
+						<div class="navbar-header mr-4">
+							<button type="button" id="sidebarCollapse" class="navbar-btn active" style="background-color: #0984e3">
+							<span></span>
+							<span></span>
+							<span></span>
+							</button>
+						</div>
+					{% endif %}
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-555"
 					aria-controls="navbarSupportedContent-555" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 					</button>
-					<a class="navbar-brand font-weight-bold" id="title" style="color: #7b6e6e96;font-family: 'Baloo Da 2', cursive;" href="{% url 'home' %}">O|L</a>
+					<a class="navbar-brand font-weight-bold" id="title" style="color: #4834d4;" href="{% url 'home' %}">Online|Learn</a>
 					<div class="collapse navbar-collapse" id="navbarSupportedContent-555">
-						<ul class="navbar-nav mr-auto">
-							<li class="nav-item active">
-								<a class="nav-link" href="#">Home
-									<span class="sr-only">(current)</span>
-								</a>
-							</li>
+						<ul class="navbar-nav ml-auto">
 							<li class="nav-item">
-								<a class="nav-link" href="#">Features</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="#">Pricing</a>
+								<div class="input-group form-sm form-2 pl-0">
+									<input class="form-control" type="text" placeholder="Explore Quizzes" aria-label="Search">
+									<div class="input-group-append">
+										<span class="input-group-text " id="basic-text1" style="background-color: #0984e3"><i class="fas fa-search text-grey"
+										aria-hidden="true"></i></span>
+									</div>
+								</div>
 							</li>
 						</ul>
 						<ul class="navbar-nav ml-auto nav-flex-icons">
@@ -107,51 +110,63 @@
 						</ul>
 					</div>
 				</nav>
+			</div>
 				<div class="container mx-auto mt-5" >
 					{% if messages %}
 						<ul class="list-unstyled messages mt-5">
 							{% for message in messages %}
 								{% if message.tags == 'error' %}
-								<li><div class="alert alert-danger alert-dismissible fade show" role="alert">{{ message }}
-								{% else %}
-								<li><div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">{{ message }}
-								{% endif %}
-									<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-									</button>
-								</div>
-							</li>
-						{% endfor %}
-					</ul>
-				{% endif %}
-				<div class="row justify-content-center">
-					<div class="col-50 mt-5">
-						{% block content %}
-							{% block scripts %}
-								<script src="http://code.jquery.com/jquery-3.2.1.min.js"
-								integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-								crossorigin="anonymous"></script>
-								<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-								<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-								<script type="text/javascript" src="{% static "js/mdb.min.js" %}"></script>
+									<li><div class="alert alert-danger alert-dismissible fade show" role="alert">{{ message }}
+									{% else %}
+										<li><div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">{{ message }}
+										{% endif %}
+										<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+								</li>
+							{% endfor %}
+						</ul>
+					{% endif %}
+					<div class="row justify-content-center">
+						<div class="col-50 mt-5">
+							{% block content %}
+								{% block scripts %}
+									<script src="http://code.jquery.com/jquery-3.2.1.min.js"
+									integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+									crossorigin="anonymous"></script>
+									<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+									<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+									<script type="text/javascript" src="{% static "js/mdb.min.js" %}"></script>
+									<script type="text/javascript" src="{% static "js/jquery.flipping_text.min.js" %}"></script>
+								{% endblock %}
 							{% endblock %}
-						{% endblock %}
-						<script type="text/javascript">
-						$(document).ready(function() {
-							$('body').on("click", "#list_toggle",function(){
-								$(this).find('i').toggleClass("fa-chevron-up");
-								$(this).find('i').toggleClass("fa-chevron-down");
-									});
-							$("#sidebarCollapse").on("click", function() {
-								$("#sidebar").toggleClass("active");
-								$(this).toggleClass("active");
+							<script type="text/javascript">
+							$(document).ready(function() {
+								$(window).on("scroll", function(){
+									if($(this).scrollTop()){
+										$(".header").removeClass("sticky");
+									}else{
+										$(".header").addClass("sticky");
+									}
+								});
+								$("#title").flipping_text({tickerTime: 8});
+								$('body').on("click", "#list_toggle",function(){
+									$(this).find('i').toggleClass("fa-chevron-up");
+									$(this).find('i').toggleClass("fa-chevron-down");
+										});
+								$("#sidebarCollapse").on("click", function() {
+									$("#sidebar").toggleClass("active");
+									$(".avatar").toggle();
+									$(this).toggleClass("active");
+								});
 							});
-						});
-						</script>
+							</script>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</body>
+	</body>
 </html>

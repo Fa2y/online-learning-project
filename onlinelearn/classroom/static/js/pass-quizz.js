@@ -1,11 +1,11 @@
 //for loading css in already made head
 var newStyle = document.createElement("link");
 newStyle.rel = "stylesheet";
-newStyle.href = "../static/css/style.css";
+newStyle.href = "../static/css/pass-quizz-style.css";
 document.getElementsByTagName("head")[0].appendChild(newStyle);
 let data = JSON.parse(document.getElementById('data').value);
 document.querySelector("span.name").innerHTML = data['quizzname']
-document.querySelector("p.author").innerHTML = "author " + data['author']
+document.querySelector("p.author").innerHTML = 'author : <a href="/profile/' + data['author'] +'">'+data['author']+'</a>'
 //  [
 //   {
 //     id: 1,
