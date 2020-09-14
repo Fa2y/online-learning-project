@@ -214,8 +214,6 @@ def ChangePasswordView(request):
 @login_required
 @user_passes_test(is_teacher, )
 def CreateQuizzView(request):
-	# subjects = Subject.objects.all()
-	# return render(request, 'create-quizz.html',{'subjects':subjects})
 	if request.POST:
 		data = dict(request.POST)
 		sub = Subject.objects.filter(id = data['subject'][0]).first()
@@ -299,8 +297,6 @@ def PassQuizzView(request, pk):
 			answers = Answer.objects.filter(question = question, is_correct = True).values_list('text', flat = True)
 			total_score += len(answers)
 			user_answers = request.POST[f'answer{i}[]']
-			# for answr in user_answers:
-				# print("answr:",answr)
 			if user_answers in list(answers):
 				user_score +=1
 			i += 1
@@ -331,5 +327,9 @@ def TakenQuizzView(request, pk):
 
 	return render(request, 'result-quizz.html', {'taken_quizz' : taken_quizz, 'data':data})
 
+
+def ListQuizzView(request):
+	quizzes = Quizz.objects.all()
+	return render(request, 'list-quizz.html', {'quizzes': quizzes})
 def HomeView(request):
 	return render(request, 'home.html')

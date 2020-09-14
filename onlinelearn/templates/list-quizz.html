@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container">
+  <input class="form-control mb-4" id="tableSearch" type="text"
+    placeholder="Type something to search quizzes">
+
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Quizz Title</th>
+        <th>Category</th>
+        <th>Author</th>
+      </tr>
+    </thead>
+    <tbody id="myTable">
+      {% for quizz in quizzes %}
+      <tr class='clickable-row' data-href='/quizz/{{quizz.id}}' style="cursor: pointer;">
+        <td>{{ quizz.title }}</td>
+        <td>{{ quizz.subject.name }}</td>
+        <td><a href="/profile/{{quizz.author.username}}">{{quizz.author.username}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% block scripts %}
+	{{ block.super }}
+	<script type="text/javascript">
+	$(document).ready(function(){
+  $("#tableSearch").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+
+  });
+
+    $(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

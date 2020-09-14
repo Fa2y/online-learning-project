@@ -21,6 +21,7 @@ urlpatterns = [
 	url(r'^quizz/create/complete/(?P<quizzid>[0-9]+)$',views.QuizzCompleteView, name='create-quizz-complete'),
 	url(r'^quizz/(?P<pk>[0-9]+)$',views.PassQuizzView, name='pass-quizz'),
 	url(r'^quizz/taken/(?P<pk>[0-9]+)$',views.TakenQuizzView, name='result-quizz'),
+	url(r'^quizz/list/$',views.ListQuizzView, name='list-quizz'),
 	url(r'^$', views.HomeView, name='home'),
 #.....setting up static route like this just for debugging 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
